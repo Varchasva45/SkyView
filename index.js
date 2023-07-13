@@ -6,6 +6,7 @@ const grantAccessContainer = document.querySelector(".grant-location-container")
 const searchForm = document.querySelector("[data-searchForm]");
 const loadingScreen = document.querySelector(".loading-container");
 const userInfoContainer = document.querySelector(".user-info-container");
+const errorScreen = document.querySelector("[data-errorScreen]");
 
 //initially vairables need????
 
@@ -19,6 +20,7 @@ function switchTab(newTab) {
         oldTab.classList.remove("current-tab");
         oldTab = newTab;
         oldTab.classList.add("current-tab");
+        errorScreen.classList.remove("active");
 
         if(!searchForm.classList.contains("active")) {
             //kya search form wala container is invisible, if yes then make it visible
@@ -67,6 +69,8 @@ async function fetchUserWeatherInfo(coordinates) {
     grantAccessContainer.classList.remove("active");
     //make loader visible
     loadingScreen.classList.add("active");
+    errorScreen.classList.remove("active");
+
 
     //API CALL
     try {
@@ -75,9 +79,17 @@ async function fetchUserWeatherInfo(coordinates) {
           );
         const  data = await response.json();
 
-        loadingScreen.classList.remove("active");
-        userInfoContainer.classList.add("active");
-        renderWeatherInfo(data);
+        if(data?.cod == 200){
+            loadingScreen.classList.remove("active");
+            userInfoContainer.classList.add("active");
+            renderWeatherInfo(data);
+        }else{
+            errorScreen.classList.add("active");
+            userInfoContainer.classList.remove("active");
+            loadingScreen.classList.remove("active");
+        }
+
+        
     }
     catch(err) {
         loadingScreen.classList.remove("active");
@@ -154,15 +166,24 @@ async function fetchSearchWeatherInfo(city) {
     loadingScreen.classList.add("active");
     userInfoContainer.classList.remove("active");
     grantAccessContainer.classList.remove("active");
+    errorScreen.classList.remove("active");
 
     try {
         const response = await fetch(
             `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`
           );
         const data = await response.json();
-        loadingScreen.classList.remove("active");
-        userInfoContainer.classList.add("active");
-        renderWeatherInfo(data);
+
+            
+        if(data?.cod == 200){
+            loadingScreen.classList.remove("active");
+            userInfoContainer.classList.add("active");
+            renderWeatherInfo(data);
+        }else{
+            loadingScreen.classList.remove("active");
+            errorScreen.classList.add("active");
+        }
+        
     }
     catch(err) {
         //hW
