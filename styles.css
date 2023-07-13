@@ -233,9 +233,12 @@ h1 {
 }
 
 .error-container.active{
+    margin: 0 auto;
     display: flex; 
+    width: 30%;
 }
 
 .error-container img{
-    width: 30%;
+    width: 50%;
+    height: 50%;
 }
